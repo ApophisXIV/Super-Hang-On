@@ -1,0 +1,23 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define CANTIDAD_TESELAS 4096
+#define ANCHO_TESELA     8
+#define ALTO_TESELA      8
+
+#define ALTO_PUNTO_DE_FUGA 96
+
+#define N_VALORES_ROM 229376
+
+#define VENTANA_ANCHO 800
+#define VENTANA_ALTO  600
+// #define VENTANA_ANCHO 320
+// #define VENTANA_ALTO 224
+
+#define VENTANA_ANCHO_ORIGINAL 320
+#define VENTANA_ALTO_ORIGINAL  224
+
+#define JUEGO_FPS 30
+#define DELTA_T   (1.0 / JUEGO_FPS)
+
+#endif

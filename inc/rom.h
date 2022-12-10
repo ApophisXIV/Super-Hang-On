@@ -32,9 +32,9 @@
 // Getters
 // Setters
 // Utils
-bool leer_ruta(imagen_t **road_img);
-bool leer_teselas(imagen_t **im);
+bool rom_leer_ruta(imagen_t **road_img);
+bool rom_leer_teselas(imagen_t **im);
 bool leer_moto(imagen_t *im);
-bool leer_figuras_raw(uint16_t *buf_figs);
+bool rom_leer_figuras_raw(uint16_t *buf_figs);
 
 #endif    // ROM_H

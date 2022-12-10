@@ -5,7 +5,7 @@ OBJ_PATH = $(BUILD_PATH)/obj
 
 PROGRAM = Hang-On
 CC = gcc
-CFLAGS = -Wall -std=c99 -pedantic  -g -O0 -I $(INC_PATH)
+CFLAGS = -Wall -std=c99 -pedantic -Werror -g -O0 -I $(INC_PATH)
 LDFLAGS = -lm -lSDL2
 
 SRC_FILES = $(shell find $(SRC_PATH) -name '*.c')
@@ -38,6 +38,8 @@ run: $(PROGRAM)
 	@echo -e '\033[1;41m --> \033[0;1;34m Ejecutando: \033[0m \033[1;35m $(PROGRAM) \033[0m\033[0m'
 	@echo -e '\033[1;36m=============================================================================\033[0m'
 	./$(PROGRAM)
+	@rm -f $(OBJ_FILES)
+	@rm -f $(PROGRAM)
 	@echo -e '\033[1;36m=============================================================================\n\033[0m'
 
 

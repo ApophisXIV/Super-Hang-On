@@ -130,18 +130,16 @@ imagen_t *imagen_escalar(const imagen_t *origen, size_t ancho_destino, size_t al
     return destino;
 }
 
-imagen_t *generar_mosaico(imagen_t *teselas[], const pixel_t paleta[][8], size_t filas, size_t columnas,
+imagen_t *generar_mosaico(const imagen_t *teselas[], const pixel_t paleta[][8], size_t filas, size_t columnas,
                           const uint16_t mosaico_teselas[filas][columnas],
                           const uint8_t mosaico_paletas[filas][columnas]) {
 
-    imagen_t *mosaico = imagen_generar(CANTIDAD_TESELAS, CANTIDAD_TESELAS, 0);
+    imagen_t *mosaico = imagen_generar(ANCHO_TESELA * columnas, ALTO_TESELA * filas, 0);
     if (mosaico == NULL) return NULL;
 
-    for (size_t y = 0; y < filas; y++) {
-        for (size_t x = 0; x < columnas; x++) {
+    for (size_t y = 0; y < filas; y++)
+        for (size_t x = 0; x < columnas; x++)
             imagen_pegar_con_paleta(mosaico, teselas[mosaico_teselas[y][x]], x * 8, y * 8, paleta[mosaico_paletas[y][x]], NO_STRIP_MODE, 0);
-        }
-    }
 
     return mosaico;
 }
@@ -150,40 +148,3 @@ void imagen_a_textura(const imagen_t *im, uint16_t *v) {
     for (size_t i = 0; i < (im->alto); i++)
         memcpy(v + i * (im->ancho), im->pixeles[i], im->ancho * sizeof(pixel_t));
 }
-
-// ANCHOR - DEBUG
-#include <stdio.h>
-void imagen_escribir_ppm(const imagen_t *im) {
-
-    FILE *fo = fopen("imagen.ppm", "w");
-    fprintf(fo, "P3 %zd %zd\n255\n", im->ancho, im->alto);
-
-    for (size_t f = 0; f < im->alto; f++) {
-        for (size_t c = 0; c < im->ancho; c++) {
-            pixel_t p = im->pixeles[f][c];
-            fprintf(fo, "%d %d %d ", p, p, p);
-        }
-        fprintf(fo, "\n");
-    }
-    fclose(fo);
-}
-
-void imagen_pegar_fila_con_paleta(imagen_t *destino, const imagen_t *origen, int x, int y, const pixel_t paleta[], size_t f) {
-
-    for (int c = x >= 0 ? 0 : -x; c < origen->ancho && c + x < destino->ancho; c++) {
-        if (origen->pixeles[f][c] != 0)
-            destino->pixeles[y][c + x] = paleta[origen->pixeles[f][c]];
-    }
-}
-
-// imagen_t *imagen_recortar_filas(const imagen_t *origen, size_t fila_inicial, size_t fila_final) {
-//     if (fila_final < fila_inicial) return NULL;
-
-//     imagen_t *recortada = imagen_generar(origen->ancho, origen->alto - fila_final - fila_inicial, 0);
-//     if (recortada == NULL) return NULL;
-
-//     for (size_t i = fila_inicial; i <= fila_final; i++)
-
-
-//     return recortada;
-// }

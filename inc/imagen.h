@@ -50,16 +50,9 @@ void imagen_pegar(imagen_t *destino, const imagen_t *origen, int x, int y);
 void imagen_pegar_con_paleta(imagen_t *destino, const imagen_t *origen, int x, int y, const pixel_t paleta[], bool strip_mode, size_t strip);
 
 void imagen_a_textura(const imagen_t *im, uint16_t *v);
-imagen_t *generar_mosaico(imagen_t *teselas[], const pixel_t paleta[][8], size_t filas, size_t columnas, const uint16_t mosaico_teselas[filas][columnas], const uint8_t mosaico_paletas[filas][columnas]);
+imagen_t *generar_mosaico(const imagen_t *teselas[], const pixel_t paleta[][8], size_t filas, size_t columnas, const uint16_t mosaico_teselas[filas][columnas], const uint8_t mosaico_paletas[filas][columnas]);
 
 imagen_t *imagen_espejar(imagen_t *o);
 imagen_t *imagen_escalar(const imagen_t *origen, size_t ancho_destino, size_t alto_destino);
-imagen_t *imagen_recortar_filas(const imagen_t *origen, size_t fila_inicial, size_t fila_final);
-
-bool leer_teselas(imagen_t *teselas[]);
-
-// ANCHOR - DEBUG
-void imagen_escribir_ppm(const imagen_t *im);
-void imagen_pegar_fila_con_paleta(imagen_t *destino, const imagen_t *origen, int x, int y, const pixel_t paleta[], size_t f);
 
 #endif    // IMAGEN_H

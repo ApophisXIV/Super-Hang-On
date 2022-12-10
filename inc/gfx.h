@@ -34,6 +34,9 @@
 // Getters
 // Setters
 // Utils
-void update_road_over_canvas(imagen_t *canvas, imagen_t *road_img, ruta_t *road, moto_t *moto);
+imagen_t *gfx_get_figures(uint16_t *buf_figs, size_t n_offset, size_t w, size_t h);
+void gfx_update_bg_over_canvas(imagen_t *canvas, const ruta_t *road, const moto_t *moto, const imagen_t **teselas);
+void gfx_update_road_over_canvas(imagen_t *canvas, imagen_t *road_img, const ruta_t *road, const moto_t *moto);
+bool gfx_update_sprite_over_canvas(imagen_t *canvas, moto_t *moto, uint16_t *buf_figs);
 
 #endif    // GFX_H

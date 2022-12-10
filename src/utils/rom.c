@@ -12,6 +12,8 @@
 #include "../../inc/rom.h"
 #include "../../inc/config.h"
 
+#include "../../inc/utils.h"    //ANCHOR - DEBUG
+
 /* ---------------------- Private constants and macros ---------------------- */
 #define ROM_SIZE            32768
 #define ROM_ROAD_CHUNK_SIZE 8192
@@ -79,8 +81,7 @@ const char *rom_tiles_path[] = {
 // Getters
 // Setters
 // Utils
-
-bool leer_teselas(imagen_t **im) {
+bool rom_leer_teselas(imagen_t **im) {
     // Opening files
     FILE *fr = fopen(rom_tiles_path[ROM_6841], "rb");
     if (fr == NULL) return false;
@@ -149,7 +150,7 @@ bool leer_teselas(imagen_t **im) {
 #define GET_BIT(byte, bit) ((byte >> (7 - bit)) & 1)
 
 // PRE: Recibe un puntero imagen_t vacio
-bool leer_ruta(imagen_t **road_img) {
+bool rom_leer_ruta(imagen_t **road_img) {
 
     // Auxiliar image
     imagen_t *im = imagen_generar(512, 128, 0);
@@ -172,7 +173,7 @@ bool leer_ruta(imagen_t **road_img) {
 
     size_t index_mem = 0;
     for (size_t y = 0; y < imagen_get_alto(im); y++) {
-        for (size_t x = 0; x < imagen_get_ancho(im) / 8; x++) {
+        for (size_t x = 0; x < imagen_get_ancho(im) / 8; x++, index_mem++) {
 
             uint8_t byte  = buf[index_mem];                              // Get the byte (0x0000 - 0x1FFF)
             uint8_t byte2 = buf[ROM_ROAD_CHUNK_SIZE + index_mem];        // Get the byte (0x2000 - 0x3FFF)
@@ -181,9 +182,10 @@ bool leer_ruta(imagen_t **road_img) {
 
             for (size_t bit = 0; bit < 8; bit++)
                 // Merge and set the pixel
-                imagen_set_pixel(im, x * 8 + bit, y, pixel4_crear(GET_BIT(byte4, bit), GET_BIT(byte3, bit), GET_BIT(byte2, bit), GET_BIT(byte, bit)));
-
-            index_mem++;
+                if (!imagen_set_pixel(im, x * 8 + bit, y, pixel4_crear(GET_BIT(byte4, bit), GET_BIT(byte3, bit), GET_BIT(byte2, bit), GET_BIT(byte, bit)))) {
+                    imagen_destruir(im);
+                    return false;
+                }
         }
     }
 
@@ -191,7 +193,10 @@ bool leer_ruta(imagen_t **road_img) {
     for (size_t y = 0; y < imagen_get_alto(im); y++) {
         for (size_t x = 0; x < imagen_get_ancho(im); x++) {
             if (imagen_get_pixel(im, x, y) != 0xf) break;
-            if (!imagen_set_pixel(im, x, y, 0)) return false;
+            if (!imagen_set_pixel(im, x, y, 0)) {
+                imagen_destruir(im);
+                return false;
+            }
         }
     }
 
@@ -217,11 +222,19 @@ bool leer_ruta(imagen_t **road_img) {
         return false;
     }
 
-    // imagen_pegar(ruta_img, im, 162 + 4 - 512, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);
-    // imagen_pegar(ruta_img, imagen_espejar(im), 162 - 4, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);
+    // NOTE - No utilizo las coordenadas provistas directamente por el TP pues no se ajustan a la imagen recortandola por izquierda
+    // Las coordenadas -284 y -63 fueron obtenidas empiricamente de la siguiente manera:
+    // 1. Se dibujó la imagen de la ruta sin espejar
+    // 2. Se la escribio en un archivo de texto
+    // 3. Se contaron cuantos pixeles hay por izquierda y se desplazaron las coordenadas de la imagen de la ruta
+    // 4. Se dibujó la imagen de la ruta espejada
+    // 5. Se repitió el proceso
+    imagen_pegar(ruta_img, im, -284, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);    // Recorta las primeras 16 filas de la imagen (mirar la imagen docs/road_raw.ppm para entender que hay que recortar)
+    imagen_pegar(ruta_img, imagen_espejar(ruta_img), -63, 0);
 
-    imagen_pegar(ruta_img, im, 162 + 4 - 512, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);
-    imagen_pegar(ruta_img, imagen_espejar(im), 162 - 4, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);
+    // NOTE - DEBUG de la imagen
+    // dump_image_to_ppm(ruta_img, "docs/ruta.ppm");
+    // dump_image_to_txt(ruta_img, "docs/ruta.txt");
 
     imagen_destruir(im);
 
@@ -230,7 +243,7 @@ bool leer_ruta(imagen_t **road_img) {
     return true;
 }
 
-bool leer_figuras_raw(uint16_t *buf_figs) {
+bool rom_leer_figuras_raw(uint16_t *buf_figs) {
 
     for (roms_figures_t rom = ROM_6819; rom <= ROM_6846; rom += 2) {
 

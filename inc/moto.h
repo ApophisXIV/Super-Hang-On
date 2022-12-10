@@ -32,16 +32,30 @@ void moto_destruir(moto_t *moto);
 
 /* ------------------------------ Public enums ------------------------------ */
 typedef enum {
-    MOTO_REPOSO,
     MOTO_GIRANDO_IZQUIERDA,
     MOTO_GIRANDO_DERECHA,
+    MOTO_REPOSO,
 } moto_dir_state_t;
 
 typedef enum {
-    MOTO_NEUTRAL,
     MOTO_FRENANDO,
     MOTO_ACELERANDO,
+    MOTO_NEUTRAL,
 } moto_vel_state_t;
+
+typedef enum {
+    SPIN_INTENSITY_0,
+    SPIN_INTENSITY_1,
+    SPIN_INTENSITY_2,
+    SPIN_INTENSITY_3,
+} moto_actions_t;
+
+typedef enum {
+    P_AVANCE_1,
+    P_AVANCE_2,
+    P_FRENADO_1,
+    P_FRENADO_2,
+} moto_palette_t;
 
 /* ---------------------------- Public prototypes --------------------------- */
 
@@ -49,6 +63,7 @@ typedef enum {
 int moto_get_spin_intensity(const moto_t *moto);
 double moto_get_velocity(const moto_t *moto);
 double moto_get_x(const moto_t *moto);
+double moto_get_last_x(const moto_t *moto);
 double moto_get_y(const moto_t *moto);
 double moto_get_points(const moto_t *moto);
 bool moto_is_morder_banquina(const moto_t *moto);
@@ -56,7 +71,8 @@ bool moto_is_colision(const moto_t *moto);
 bool moto_is_gano(const moto_t *moto);
 bool moto_is_perdio(const moto_t *moto);
 moto_dir_state_t moto_get_dir_state(const moto_t *moto);
-moto_vel_state_t moto_get_vel_state(const moto_t *moto);
+moto_vel_state_t moto_get_vel_state(moto_t *moto);
+moto_palette_t moto_get_palette(const moto_t *moto);
 
 // Setters
 void moto_set_spin_intensity(moto_t *moto, int intensity);
@@ -70,8 +86,8 @@ void moto_set_gano(moto_t *moto, bool state);
 void moto_set_perdio(moto_t *moto, bool state);
 void moto_set_dir_state(moto_t *moto, moto_dir_state_t action, bool is_key_down);
 void moto_set_vel_state(moto_t *moto, moto_vel_state_t action, bool is_key_down);
+void moto_set_palette(moto_t *moto, moto_palette_t palette);
 
 // Utils
-bool update_sprite_over_canvas(imagen_t *canvas, moto_t *moto, uint16_t *buf_figs);
 
 #endif    // MOTO_H

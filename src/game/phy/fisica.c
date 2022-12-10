@@ -22,12 +22,12 @@ double aceleracion(double velocidad, double tiempo) {
     return (MAX_SPEED - (MAX_SPEED - velocidad) * exp(-0.224358 * tiempo));
 }
 double frenado(double velocidad, double tiempo) {
-    if (velocidad > CRUISE_SPEED) return velocidad - 300 * tiempo;
+    if (velocidad > CRUISE_SPEED) return velocidad -300 * tiempo;
     return velocidad;
 }
 double desaceleracion(double velocidad, double tiempo) {
     if (velocidad < CRUISE_SPEED) return aceleracion(velocidad, tiempo);
-    if (velocidad >= CRUISE_SPEED) return velocidad - 90.0 * tiempo;
+    if (velocidad > CRUISE_SPEED) return velocidad - 90.0 * tiempo;
     return velocidad;
 }
 
@@ -74,11 +74,10 @@ double puntaje(double y, double velocidad, double tiempo, double puntos) {
 bool ganar(double posicion_x) {
     return posicion_x >= 4200;
 }
-// revisar
 bool perder(double tiempo) {
     return tiempo >= 75;
 }
-// falta terminar
+// TODO: revisar
 bool choque(double x, double y, double ancho) {
     return true;    // falta teminar
 }
@@ -99,6 +98,7 @@ static vel_action_t vel_action_lut[] = {
 };
 
 // ANCHOR - DEBUG
+// Despues borrar desde aca
 #include <stdio.h>
 const char *state_vel_a_string(int estado) {
     switch (estado) {
@@ -121,9 +121,9 @@ const char *gano_o_perdio(bool gano, bool perdio) {
     if (perdio) return "PERDIO";
     return "JUGANDO";
 }
+// Hasta aca
 
-void update_physics(moto_t *moto, ruta_t *ruta, double tiempo_total) {
-
+void update_physics(moto_t *moto, const ruta_t *ruta, double tiempo_total) {
 
     // Velocidad modificada por el estado de la moto
     moto_set_velocity(moto, vel_action_lut[moto_get_vel_state(moto)](moto_get_velocity(moto), DELTA_T));
@@ -142,8 +142,8 @@ void update_physics(moto_t *moto, ruta_t *ruta, double tiempo_total) {
 
     moto_set_perdio(moto, perder(tiempo_total));
 
-    // TODO: Implement (crash)
+    // TODO: Implement (collision detection)
 
-    // ANCHOR - DEBUG
-    printf("t_tot: %1.1f | vel: %01.1f | x: %1.0f | y: %1.0f | puntos: %1.0f | giro: %d  | state_vel: %s | state_dir: %s | state_game: %s\n", tiempo_total, moto_get_velocity(moto), moto_get_x(moto), moto_get_y(moto), moto_get_points(moto), moto_get_spin_intensity(moto), state_vel_a_string(moto_get_vel_state(moto)), state_dir_a_string(moto_get_dir_state(moto)), gano_o_perdio(moto_is_gano(moto), moto_is_perdio(moto)));
+    // ANCHOR - DEBUG - Borrar despues (te recomiendo dejarlo hasta terminar todo)
+    fprintf(stderr,"t_tot: %1.1f | vel: %01.1f | x: %1.0f | y: %1.0f | puntos: %1.0f | giro: %d  | state_vel: %s | state_dir: %s | state_game: %s\n", tiempo_total, moto_get_velocity(moto), moto_get_x(moto), moto_get_y(moto), moto_get_points(moto), moto_get_spin_intensity(moto), state_vel_a_string(moto_get_vel_state(moto)), state_dir_a_string(moto_get_dir_state(moto)), gano_o_perdio(moto_is_gano(moto), moto_is_perdio(moto)));
 }

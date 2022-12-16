@@ -230,13 +230,15 @@ bool rom_leer_ruta(imagen_t **road_img) {
     // 4. Se dibujó la imagen de la ruta espejada
     // 5. Se repitió el proceso
     imagen_pegar(ruta_img, im, -284, ALTO_PUNTO_DE_FUGA - 1 - VENTANA_ALTO_ORIGINAL / 2);    // Recorta las primeras 16 filas de la imagen (mirar la imagen docs/road_raw.ppm para entender que hay que recortar)
-    imagen_pegar(ruta_img, imagen_espejar(ruta_img), -63, 0);
+    imagen_t *im_espejada = imagen_espejar(ruta_img);
+    imagen_pegar(ruta_img, im_espejada, -63, 0);
 
     // NOTE - DEBUG de la imagen
     // dump_image_to_ppm(ruta_img, "docs/ruta.ppm");
     // dump_image_to_txt(ruta_img, "docs/ruta.txt");
 
     imagen_destruir(im);
+    imagen_destruir(im_espejada);
 
     *road_img = ruta_img;
 
@@ -245,7 +247,7 @@ bool rom_leer_ruta(imagen_t **road_img) {
 
 bool rom_leer_figuras_raw(uint16_t *buf_figs) {
 
-    for (roms_figures_t rom = ROM_6819; rom <= ROM_6846; rom += 2) {
+    for (roms_figures_t rom = ROM_6819; rom < ROM_6846; rom += 2) {
 
         // Opening ROM pair
         fprintf(stderr, "Opening ROM pair [LS] %s [HS] %s ... \n", rom_figures_path[rom], rom_figures_path[rom + 1]);
@@ -273,7 +275,7 @@ bool rom_leer_figuras_raw(uint16_t *buf_figs) {
                 return false;
             }
 
-            buf_figs[i + (rom - ROM_6819) * ROM_SIZE] = (byte_hs << 8) | byte_ls;
+            buf_figs[i + rom / 2 * ROM_SIZE] = (byte_hs << 8) | byte_ls;
         }
 
         fclose(rom_ls);

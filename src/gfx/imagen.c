@@ -60,8 +60,7 @@ imagen_t *imagen_generar(size_t ancho, size_t alto, pixel_t valor) {
 
 // Destructor
 void imagen_destruir(imagen_t *imagen) {
-    for (size_t i = 0; i < (imagen->alto); i++)
-        free(imagen->pixeles[i]);
+    for (size_t i = 0; i < (imagen->alto); i++) free(imagen->pixeles[i]);
     free(imagen->pixeles);
     free(imagen);
 }
@@ -132,14 +131,22 @@ imagen_t *imagen_escalar(const imagen_t *origen, size_t ancho_destino, size_t al
 
 imagen_t *generar_mosaico(const imagen_t *teselas[], const pixel_t paleta[][8], size_t filas, size_t columnas,
                           const uint16_t mosaico_teselas[filas][columnas],
-                          const uint8_t mosaico_paletas[filas][columnas]) {
+                          const uint8_t mosaico_paletas[filas][columnas],
+                          bool hex_str_mode, const char *hex_str) {
 
     imagen_t *mosaico = imagen_generar(ANCHO_TESELA * columnas, ALTO_TESELA * filas, 0);
     if (mosaico == NULL) return NULL;
 
+    size_t c_hex = 0;
     for (size_t y = 0; y < filas; y++)
-        for (size_t x = 0; x < columnas; x++)
-            imagen_pegar_con_paleta(mosaico, teselas[mosaico_teselas[y][x]], x * 8, y * 8, paleta[mosaico_paletas[y][x]], NO_STRIP_MODE, 0);
+        for (size_t x = 0; x < columnas; x++) {
+            if (hex_str_mode) {
+                char hex[2] = {hex_str[c_hex], hex_str[c_hex + 1]};
+                imagen_pegar(mosaico, teselas[strtol(hex, NULL, 16)], x * ANCHO_TESELA, y * ALTO_TESELA);
+                c_hex += 2;
+            } else
+                imagen_pegar_con_paleta(mosaico, teselas[mosaico_teselas[y][x]], x * 8, y * 8, paleta[mosaico_paletas[y][x]], NO_STRIP_MODE, 0);
+        }
 
     return mosaico;
 }

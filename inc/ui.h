@@ -17,6 +17,7 @@
 
 /* -------------------------------- Includes -------------------------------- */
 #include "imagen.h"
+#include "moto.h"
 #include <stdint.h>
 
 /* ------------------- Public data structures and typedefs ------------------ */
@@ -28,11 +29,11 @@
 /* ----------------------- Public constants and macros ---------------------- */
 
 /* ------------------------------ Public enums ------------------------------ */
-
+// typedef enum { GOAL } ui_text_t;
 /* ---------------------------- Public prototypes --------------------------- */
 // Getters
 // Setters
 // Utils
-// TODO Aca hacer el tema de los textos
-imagen_t *str_to_text_img(const char *str, uint16_t *buf_figs);
+void ui_update_text_over_canvas(imagen_t *canvas, const imagen_t **teselas, const moto_t *moto, size_t time);
+
 #endif    // UI_H

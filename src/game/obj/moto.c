@@ -1,5 +1,5 @@
 /**
- * @file archivo.c
+ * @file moto.c
  * @author Guido Rodriguez (guerodriguez@fi.uba.ar)
  * @brief Descripcion
  * @version 1.0
@@ -63,7 +63,7 @@ moto_t *moto_crear() {
     moto->physics_data.x              = 0.0;
     moto->physics_data.last_x         = 0.0;
     moto->physics_data.y              = 0.0;
-    moto->physics_data.velocity       = 1.0;
+    moto->physics_data.velocity       = 0.0;    // ANCHOR ACA LO CAMBIE POR DEBUG A 2600
     moto->physics_data.spin_intensity = 0;
 
     moto->gfx_data.palette                     = P_AVANCE_1;
@@ -94,7 +94,7 @@ double moto_get_velocity(const moto_t *moto) {
 double moto_get_x(const moto_t *moto) {
     return moto->physics_data.x;
 }
-double moto_get_last_x(const moto_t *moto){
+double moto_get_last_x(const moto_t *moto) {
     return moto->physics_data.last_x;
 }
 
@@ -112,11 +112,11 @@ bool moto_is_morder_banquina(const moto_t *moto) {
 bool moto_is_colision(const moto_t *moto) {
     return moto->player_data.colisionando;
 }
-bool moto_is_gano(const moto_t *moto) {
+bool moto_gano(const moto_t *moto) {
     return moto->player_data.gano;
 }
 
-bool moto_is_perdio(const moto_t *moto) {
+bool moto_perdio(const moto_t *moto) {
     return moto->player_data.perdio;
 }
 
@@ -124,15 +124,10 @@ moto_dir_state_t moto_get_dir_state(const moto_t *moto) {
     return moto->gfx_data.dir_state;
 }
 
-
 moto_vel_state_t moto_get_vel_state(moto_t *moto) {
     moto_vel_state_t vel_state = MOTO_REPOSO;
     if (moto->gfx_data.vel_states[MOTO_ACELERANDO] && !(moto->gfx_data.vel_states[MOTO_FRENANDO])) vel_state = MOTO_ACELERANDO;
     if (moto->gfx_data.vel_states[MOTO_FRENANDO]) vel_state = MOTO_FRENANDO;
-
-    if (vel_state == MOTO_FRENANDO) moto->gfx_data.palette = P_FRENADO_1;
-    else moto->gfx_data.palette = P_AVANCE_1;
-    
     return vel_state;
 }
 
@@ -148,7 +143,6 @@ void moto_set_velocity(moto_t *moto, double velocity) {
     moto->physics_data.velocity = velocity;
 }
 void moto_set_x(moto_t *moto, double x) {
-    moto->physics_data.last_x = moto->physics_data.x;
     moto->physics_data.x = x;
 }
 void moto_set_y(moto_t *moto, double y) {
@@ -163,20 +157,23 @@ void moto_set_dir_state(moto_t *moto, moto_dir_state_t action, bool is_key_down)
     is_key_down ? (moto->gfx_data.dir_state = action) : (moto->gfx_data.dir_state = MOTO_REPOSO);
 }
 void moto_set_vel_state(moto_t *moto, moto_vel_state_t action, bool is_key_down) {
-    is_key_down ? (moto->gfx_data.vel_states[action] = true) : (moto->gfx_data.vel_states[action] = false);
+    moto->gfx_data.vel_states[action] = is_key_down;
 }
 
 void moto_set_morder_banquina(moto_t *moto, bool state) {
     moto->player_data.mordiendo_banquina = state;
 }
-void moto_set_colision(moto_t *moto, bool state) {
-    moto->player_data.colisionando = state;
+void moto_set_colision(moto_t *moto, bool choque) {
+    moto->player_data.colisionando = choque;
 }
 void moto_set_gano(moto_t *moto, bool state) {
     moto->player_data.gano = state;
 }
 void moto_set_perdio(moto_t *moto, bool state) {
     moto->player_data.perdio = state;
+}
+void moto_set_last_x(moto_t *moto, double x) {
+    moto->physics_data.last_x = x;
 }
 
 void moto_set_palette(moto_t *moto, moto_palette_t palette) {

@@ -20,4 +20,6 @@
 #define JUEGO_FPS 30
 #define DELTA_T   (1.0 / JUEGO_FPS)
 
+#define MAX_TIEMPO_JUEGO 75
+
 #endif

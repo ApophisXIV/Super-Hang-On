@@ -2,40 +2,17 @@
 #include <stdbool.h>
 
 #include "../inc/config.h"
-#include "../inc/figuras.h"
 #include "../inc/fisica.h"
-#include "../inc/fondo.h"
 #include "../inc/gfx.h"
 #include "../inc/imagen.h"
 #include "../inc/moto.h"
-#include "../inc/paleta.h"
 #include "../inc/rom.h"
 #include "../inc/ruta.h"
+#include "../inc/semaforo.h"
 
-bool cargar_pasto(imagen_t *cuadro) {
-    // TODO Mejorar la "estética" de la función (tal vez ponerla en el modulo de gfx.c)
-    imagen_t *pasto           = imagen_generar(1, 96, pixel12_crear(0, 13, 9));
-    pixel_t colores_pasto[10] = {0x089, 0x099, 0x099, 0x0a9, 0x0a9, 0x0a9, 0x0b9, 0x0b9, 0x0c9, 0x0c9};
-    for (size_t i = 0; i < 10; i++)
-        imagen_set_pixel(pasto, 0, i, colores_pasto[i]);
-
-    imagen_t *pasto_estirado = imagen_escalar(pasto, 320, 96);
-    imagen_destruir(pasto);
-    imagen_pegar(cuadro, pasto_estirado, 0, 128);
-    imagen_destruir(pasto_estirado);
-    return true;
-}
-bool cargar_teselas(imagen_t **teselas) {
-    // TODO Mejorar la "estética" de la función (tal vez ponerla en el modulo de gfx.c)
+void destruir_teselas(imagen_t **teselas) {
     for (size_t i = 0; i < CANTIDAD_TESELAS; i++)
-        teselas[i] = imagen_generar(ANCHO_TESELA, ALTO_TESELA, 0);
-
-    if (!rom_leer_teselas(teselas)) {
-        for (size_t i = 0; i < CANTIDAD_TESELAS; i++)
-            imagen_destruir(teselas[i]);
-        return false;
-    }
-    return true;
+        imagen_destruir(teselas[i]);
 }
 
 int main() {
@@ -60,18 +37,29 @@ int main() {
 
     /* ----------------------------- Assets Loading ----------------------------- */
 
-    uint16_t buffer_figuras[N_VALORES_ROM];
-    if (!rom_leer_figuras_raw(buffer_figuras)) return 1;
-
-    imagen_t *teselas[CANTIDAD_TESELAS];
-    if (!cargar_teselas(teselas)) return 1;
-
     moto_t *moto_jugador = moto_crear();
-    if (moto_jugador == NULL) return 1;
+    if (moto_jugador == NULL) {
+        return 1;
+    }
+
+    semaforo_t *semaforo = semaforo_crear();
+    if (semaforo == NULL) {
+        moto_destruir(moto_jugador);
+        return 1;
+    }
 
     imagen_t *ruta_img;
     if (!rom_leer_ruta(&ruta_img)) {
         moto_destruir(moto_jugador);
+        semaforo_destruir(semaforo);
+        return 1;
+    }
+
+    gfx_t *gfx = gfx_crear(canvas);
+    if (gfx == NULL) {
+        moto_destruir(moto_jugador);
+        semaforo_destruir(semaforo);
+        imagen_destruir(ruta_img);
         return 1;
     }
 
@@ -128,15 +116,12 @@ int main() {
         /* -------------------------------------------------------------------------- */
         /*                                   Fisicas                                  */
         /* -------------------------------------------------------------------------- */
-        total_time += DELTA_T;
-        update_physics(moto_jugador, ruta, total_time);
+        if (moto_gano(moto_jugador) || moto_perdio(moto_jugador)) continue;
 
-        // Llego al final de la ruta
-        if (moto_get_x(moto_jugador) >= 4200) {
-            printf("Llegaste al final de la ruta! (En esta parte detecta que ganaste. Hay que laburar esto todavia)\n");
-            break;
+        if (semaforo_has_started(semaforo)) {
+            total_time += DELTA_T;
+            phy_update_physics(moto_jugador, total_time);
         }
-
         /* -------------------------------------------------------------------------- */
 
         /* -------------------------------------------------------------------------- */
@@ -144,31 +129,35 @@ int main() {
         /* -------------------------------------------------------------------------- */
 
         /* --------------------------------- Lienzo --------------------------------- */
-        imagen_t *cuadro = imagen_generar(320, 224, 0xf);
+        gfx_update_math(gfx, moto_jugador);
         /* -------------------------------------------------------------------------- */
 
         /* ---------------------------------- Fondo --------------------------------- */
-        gfx_update_bg_over_canvas(cuadro, ruta, moto_jugador, (const imagen_t **) teselas);
+        gfx_update_bg_over_canvas(gfx, moto_jugador);
         /* -------------------------------------------------------------------------- */
 
         /* ---------------------------------- Pasto --------------------------------- */
-        cargar_pasto(cuadro);
+        gfx_update_grass_over_canvas(gfx);
         /* -------------------------------------------------------------------------- */
 
         /* ---------------------------------- Ruta ---------------------------------- */
-        gfx_update_road_over_canvas(cuadro, ruta_img, ruta, moto_jugador);
+        gfx_update_road_over_canvas(gfx, ruta_img, moto_jugador, semaforo);
         /* -------------------------------------------------------------------------- */
 
         /* ---------------------------------- Moto ---------------------------------- */
-        gfx_update_sprite_over_canvas(cuadro, moto_jugador, buffer_figuras);
+        gfx_update_bike_over_canvas(gfx, moto_jugador);
+        /* -------------------------------------------------------------------------- */
+
+        /* -------------------------------- Semaforo -------------------------------- */
+        gfx_update_semaforo_over_canvas(gfx, moto_jugador, semaforo);
+        /* -------------------------------------------------------------------------- */
+
+        /* ----------------------------------- UI ----------------------------------- */
+        gfx_update_ui_over_canvas(gfx, moto_jugador, total_time);
         /* -------------------------------------------------------------------------- */
 
         /* --------------------------------- Canvas --------------------------------- */
-        // Procedemos a dibujar a pantalla completa:
-        imagen_t *cuadro_escalado = imagen_escalar(cuadro, VENTANA_ANCHO, VENTANA_ALTO);
-        imagen_a_textura(cuadro_escalado, canvas);
-        imagen_destruir(cuadro_escalado);
-        imagen_destruir(cuadro);
+        gfx_display(gfx);
         // END código del alumno
         /* -------------------------------------------------------------------------- */
 
@@ -187,7 +176,10 @@ int main() {
     }
 
     // BEGIN código del alumno
-    // No tengo nada que destruir.
+    moto_destruir(moto_jugador);
+    imagen_destruir(ruta_img);
+    semaforo_destruir(semaforo);
+    gfx_destruir(gfx);
     // END código del alumno
 
     SDL_DestroyRenderer(renderer);

@@ -4,8 +4,6 @@
 
 double map_v(double d) {
     // Notar que objetos con  están detrás de la visión y no dan valores válidos de  mientras que lo demás está entre 0 y 95.
-    // Restringiremos el campo de visión a 60 metros, por lo que todo lo que tenga
-    if (d > 60) return INFINITY; // TODO revisar esto
     return 96.0 - 96.0 * exp(-0.11 * d);
 }
 
@@ -13,9 +11,16 @@ double map_d(double v) {
     return -log((96.0 - v) / 96.0) * (1.0 / 0.11);
 }
 
-double map_h(double h0, double v) {
-    double h = h0 * (((96.0 - v) / 96.0) + (5.0 * v / 96.0));
-    return h < 3.0 ? 3.0 : h;
+double map_h(double h0, double v, bool check) {
+    double h = h0 * ((96.0 - v) / 96.0) + ((5.0 * v) / 96.0);
+    return check ? (h < 3.0 ? 3.0 : h) : h;
+}
+
+double map_u_p(double yx, size_t v, double w, double *offset_table) {
+    return yx * ((96.0 - v) / 96.0) + ((yx * v) / 5000.0) + offset_table[v] + 162 - w / 2;
+}
+double map_v_p(double v, double h) {
+    return 223 - v - h;
 }
 
 // La idea es mapear los efectos de desplazamiento lateral y curvatura de la ruta

@@ -1,8 +1,8 @@
-#ifndef GAME_MATH_H
-#define GAME_MATH_H
+#ifndef GFX_CFG_H
+#define GFX_CFG_H
 
 /**
- * @file game_math.h
+ * @file gfx_cfg.h
  * @author Guido Rodriguez (guerodriguez@fi.uba.ar)
  * @brief
  * @version 0.1
@@ -16,28 +16,25 @@
  */
 
 /* -------------------------------- Includes -------------------------------- */
-#include "ruta.h"
 
 /* ------------------- Public data structures and typedefs ------------------ */
+typedef struct {
+    int mem_offset, w, h, img_x, img_y;
+} sprites_cfg_t;
 
 /* ------------------------------- Constructor ------------------------------ */
 
 /* ------------------------------- Destructor ------------------------------- */
 
 /* ----------------------- Public constants and macros ---------------------- */
-#define WITH_CHECK    1
-#define WITHOUT_CHECK 0
+extern const sprites_cfg_t moto_sprites_cfg[];
+extern const sprites_cfg_t road_sprites_cfg[];
+extern const sprites_cfg_t semaforo_sprites_cfg[];
 /* ------------------------------ Public enums ------------------------------ */
 
 /* ---------------------------- Public prototypes --------------------------- */
 // Getters
 // Setters
 // Utils
-double map_v(double d);
-double map_d(double v);
-double map_h(double h0, double v, bool check);
-double map_u_p(double yx, size_t v, double w, double *offset_table);
-double map_v_p(double v, double h);
-void offset(double *offset_table, const ruta_t *ruta, double ym, double xm);
 
-#endif    // GAME_MATH_H
+#endif    // GFX_CFG_H

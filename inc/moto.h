@@ -66,10 +66,9 @@ double moto_get_x(const moto_t *moto);
 double moto_get_last_x(const moto_t *moto);
 double moto_get_y(const moto_t *moto);
 double moto_get_points(const moto_t *moto);
-bool moto_is_morder_banquina(const moto_t *moto);
 bool moto_is_colision(const moto_t *moto);
-bool moto_is_gano(const moto_t *moto);
-bool moto_is_perdio(const moto_t *moto);
+bool moto_gano(const moto_t *moto);
+bool moto_perdio(const moto_t *moto);
 moto_dir_state_t moto_get_dir_state(const moto_t *moto);
 moto_vel_state_t moto_get_vel_state(moto_t *moto);
 moto_palette_t moto_get_palette(const moto_t *moto);
@@ -81,11 +80,12 @@ void moto_set_x(moto_t *moto, double x);
 void moto_set_y(moto_t *moto, double y);
 void moto_set_points(moto_t *moto, double points);
 void moto_set_morder_banquina(moto_t *moto, bool state);
-void moto_set_colision(moto_t *moto, bool state);
+void moto_set_colision(moto_t *moto, bool choque);
 void moto_set_gano(moto_t *moto, bool state);
 void moto_set_perdio(moto_t *moto, bool state);
 void moto_set_dir_state(moto_t *moto, moto_dir_state_t action, bool is_key_down);
 void moto_set_vel_state(moto_t *moto, moto_vel_state_t action, bool is_key_down);
+void moto_set_last_x(moto_t *moto, double x);
 void moto_set_palette(moto_t *moto, moto_palette_t palette);
 
 // Utils

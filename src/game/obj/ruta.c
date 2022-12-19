@@ -1,20 +1,21 @@
 #include "../../../inc/ruta.h"
 
-// const struct figura_en_ruta figuras_en_ruta[] = {
-//     {ARBOL, 38, -300, 0},
-//     {ARBOL, 38, 300, 1},
-//     {CARTEL, 20, -300, 0},  // Flecha derecha
-//     {CARTEL, 20, 300, 1},   // Flecha izquierda
-//     {CARTEL, 22, -300, 0},  // Shell
-//     {CARTEL, 22, 300, 0},   // Shell
-//     {ROCA, 27, -320, 1},
-//     {ROCA, 27, 320, 1},
-//     {DELFIN, 35, -300, 0},
-//     {DELFIN, 35, 300, 0},
-//     {BELL, 34, -300, 0},
-//     {BELL, 34, 300, 0},
-//     {FORUM, 34, -300, 0},
-// };
+const figura_en_ruta_t figuras_en_ruta[] = {
+    // Figura, indice, ym, direccion
+    {ARBOL, 38, -300, 0},
+    {ARBOL, 38, 300, 1},
+    {CARTEL, 20, -300, 0},    // Flecha derecha
+    {CARTEL, 20, 300, 1},     // Flecha izquierda
+    {CARTEL, 22, -300, 0},    // Shell
+    {CARTEL, 22, 300, 0},     // Shell
+    {ROCA, 27, -320, 1},
+    {ROCA, 27, 320, 1},
+    {DELFIN, 35, -300, 0},
+    {DELFIN, 35, 300, 0},
+    {BELL, 34, -300, 0},
+    {BELL, 34, 300, 0},
+    {FORUM, 34, -300, 0},
+};
 
 const ruta_t ruta[4200 + 70] = {
     {0.0000000, 9999},

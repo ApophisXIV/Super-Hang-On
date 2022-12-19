@@ -81,7 +81,7 @@ const char *rom_tiles_path[] = {
 // Getters
 // Setters
 // Utils
-bool rom_leer_teselas(imagen_t **im) {
+static bool _rom_leer_teselas(imagen_t **im) {
     // Opening files
     FILE *fr = fopen(rom_tiles_path[ROM_6841], "rb");
     if (fr == NULL) return false;
@@ -144,6 +144,18 @@ bool rom_leer_teselas(imagen_t **im) {
         }
     }
 
+    return true;
+}
+
+bool rom_leer_teselas(imagen_t **teselas) {
+    for (size_t i = 0; i < CANTIDAD_TESELAS; i++)
+        teselas[i] = imagen_generar(ANCHO_TESELA, ALTO_TESELA, 0);
+
+    if (!_rom_leer_teselas(teselas)) {
+        for (size_t i = 0; i < CANTIDAD_TESELAS; i++)
+            imagen_destruir(teselas[i]);
+        return false;
+    }
     return true;
 }
 

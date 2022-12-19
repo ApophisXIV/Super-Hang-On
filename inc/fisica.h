@@ -18,9 +18,7 @@
 /* -------------------------------- Includes -------------------------------- */
 #include "moto.h"
 #include "ruta.h"
-
 /* ---------------------------- Public prototypes --------------------------- */
 // Utils
-void update_physics(moto_t *moto, const ruta_t *ruta, double tiempo_total);
-
+void phy_update_physics(moto_t *moto, double tiempo_total);
 #endif    // FISICA_H

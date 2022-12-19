@@ -1,0 +1,17 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "files.associations": {
+        "*.rs": "rust",
+        "ruta.h": "c",
+        "moto.h": "c",
+        "config.h": "c",
+        "imagen.h": "c",
+        "string.h": "c",
+        "figuras.h": "c",
+        "gfx.h": "c",
+        "fondo.h": "c",
+        "fisica.h": "c",
+        "game_math.h": "c",
+        "gfx_cfg.h": "c"
+    }
+}
